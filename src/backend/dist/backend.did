@@ -1,0 +1,219 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type VisitStatus = 
+ variant {
+   cancelled;
+   completed;
+   confirmed;
+   pending;
+   reviewed;
+ };
+type VisitRequestPublic = 
+ record {
+   createdAt: Timestamp;
+   customerPrincipal: principal;
+   email: text;
+   id: VisitRequestId;
+   message: text;
+   name: text;
+   phone: text;
+   preferredDate: text;
+   preferredTime: text;
+   propertyId: PropertyId;
+   status: VisitStatus;
+ };
+type VisitRequestInput = 
+ record {
+   email: text;
+   message: text;
+   name: text;
+   phone: text;
+   preferredDate: text;
+   preferredTime: text;
+   propertyId: PropertyId;
+ };
+type VisitRequestId = nat;
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   name: text;
+   role: text;
+ };
+type Timestamp = int;
+type PropertyViewCount = 
+ record {
+   propertyId: PropertyId;
+   title: text;
+   viewCount: nat;
+ };
+type PropertyType = 
+ variant {
+   commercial;
+   flat;
+   other;
+   penthouse;
+   plot;
+   studio;
+   townhouse;
+   villa;
+ };
+type PropertyPublic = 
+ record {
+   amenities: vec text;
+   city: text;
+   createdAt: Timestamp;
+   description: text;
+   facing: FacingDirection;
+   featured: bool;
+   id: PropertyId;
+   images: vec ExternalBlob;
+   listerId: principal;
+   price: nat;
+   propertyType: PropertyType;
+   published: bool;
+   sizeSqft: nat;
+   sold: bool;
+   title: text;
+   viewCount: nat;
+ };
+type PropertyInput = 
+ record {
+   amenities: vec text;
+   city: text;
+   description: text;
+   facing: FacingDirection;
+   featured: bool;
+   images: vec ExternalBlob;
+   price: nat;
+   propertyType: PropertyType;
+   sizeSqft: nat;
+   title: text;
+ };
+type PropertyId = nat;
+type PropertyFilter = 
+ record {
+   city: opt text;
+   facing: opt FacingDirection;
+   featured: opt bool;
+   maxPrice: opt nat;
+   maxSize: opt nat;
+   minPrice: opt nat;
+   minSize: opt nat;
+   propertyType: opt PropertyType;
+   sold: opt bool;
+ };
+type MonthlyInquiryCount = 
+ record {
+   count: nat;
+   month: text;
+ };
+type InquiryPublic = 
+ record {
+   createdAt: Timestamp;
+   email: text;
+   id: InquiryId;
+   isRead: bool;
+   message: text;
+   name: text;
+   phone: text;
+   propertyId: PropertyId;
+ };
+type InquiryInput = 
+ record {
+   email: text;
+   message: text;
+   name: text;
+   phone: text;
+   propertyId: PropertyId;
+ };
+type InquiryId = nat;
+type FacingDirection = 
+ variant {
+   east;
+   north;
+   northEast;
+   northWest;
+   south;
+   southEast;
+   southWest;
+   west;
+ };
+type ExternalBlob = blob;
+type DashboardStats = 
+ record {
+   activeListings: nat;
+   soldListings: nat;
+   totalInquiries: nat;
+   totalListings: nat;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addBookmark: (propertyId: PropertyId) -> ();
+  addProperty: (input: PropertyInput) -> (PropertyPublic);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  deleteProperty: (id: PropertyId) -> (bool);
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCustomerDashboard: () -> (record {bookmarkCount: nat;}) query;
+  getEmployeeDashboard: () ->
+   (record {
+      monthlyInquiries: vec MonthlyInquiryCount;
+      stats: DashboardStats;
+      topPropertyViews: vec PropertyViewCount;
+    }) query;
+  getInquiry: (id: InquiryId) -> (opt InquiryPublic) query;
+  getProperty: (id: PropertyId) -> (opt PropertyPublic);
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isCallerAdmin: () -> (bool) query;
+  listBookmarks: () -> (vec PropertyId) query;
+  listEmployeeProperties: () -> (vec PropertyPublic) query;
+  listInquiries: () -> (vec InquiryPublic) query;
+  listInquiriesForProperty: (propertyId: PropertyId) ->
+   (vec InquiryPublic) query;
+  listProperties: (filter: PropertyFilter) -> (vec PropertyPublic) query;
+  listVisitRequests: () -> (vec VisitRequestPublic) query;
+  listVisitRequestsForCustomer: () -> (vec VisitRequestPublic) query;
+  markInquiryRead: (id: InquiryId) -> (bool);
+  markPropertySold: (id: PropertyId, sold: bool) -> (bool);
+  publishProperty: (id: PropertyId) -> (variant {
+                                          err: text;
+                                          ok;
+                                        });
+  removeBookmark: (propertyId: PropertyId) -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  submitInquiry: (input: InquiryInput) -> (InquiryPublic);
+  submitVisitRequest: (input: VisitRequestInput) -> (VisitRequestPublic);
+  unpublishProperty: (id: PropertyId) -> (variant {
+                                            err: text;
+                                            ok;
+                                          });
+  updateProperty: (id: PropertyId, input: PropertyInput) ->
+   (opt PropertyPublic);
+  updateVisitRequestStatus: (id: VisitRequestId, status: VisitStatus) ->
+   (bool);
+}

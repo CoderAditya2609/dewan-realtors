@@ -1,0 +1,28 @@
+{
+  "overview": "Dewan Realtors is a premium real estate platform with luxury 3D-styled design, property listings, dual-role authentication (employee/customer), employee dashboard with analytics, inquiry management, and advanced browsing features including comparison and recently viewed.",
+  "features": [
+    "Property listings with grid, list, and map views",
+    "Employee and customer role-based authentication",
+    "Image gallery uploads for each property",
+    "Property filtering by price, location, type, size, and facing direction",
+    "Employee dashboard with analytics cards and charts",
+    "Inquiry and visit request management",
+    "Property bookmarking and saved listings for customers",
+    "Recently viewed properties and side-by-side comparison",
+    "Dark mode toggle",
+    "Premium luxury design with 3D card effects and Framer Motion animations",
+    "Fully responsive layout"
+  ],
+  "category": "real-estate",
+  "tags": [
+    "real-estate",
+    "property-listings",
+    "luxury-design",
+    "3d-effects",
+    "dark-mode",
+    "dashboard",
+    "authentication",
+    "framer-motion"
+  ],
+  "last_updated": "2026-04-08T15:56:42.932Z"
+}

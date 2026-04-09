@@ -1,0 +1,207 @@
+// Version: 3.0.0
+type Data__159895909<T> = {var count : Nat__490723111; elements : [var ?T]};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__246066408 = Blob;
+type FacingDirection__377551738 =
+  {
+    #east;
+    #north;
+    #northEast;
+    #northWest;
+    #south;
+    #southEast;
+    #southWest;
+    #west
+  };
+type InquiryId__340326671 = Nat;
+type Inquiry__331149959 =
+  {
+    createdAt : Timestamp__301639476;
+    email : Text;
+    id : InquiryId__340326671;
+    var isRead : Bool;
+    message : Text;
+    name : Text;
+    phone : Text;
+    propertyId : PropertyId__421252593
+  };
+type Internal__667636161<T> =
+  {children : [var ?Node__92254746<T>]; data : Data__159895909<T>};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__520550824<T> = {data : Data__159895909<T>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__92254746<T> =
+  {#internal : Internal__667636161<T>; #leaf : Leaf__520550824<T>};
+type OldFacingDirection__929224431 = {#east; #north; #south; #west};
+type OldInquiry__962755827 =
+  {
+    createdAt : Int;
+    email : Text;
+    id : Nat;
+    var isRead : Bool;
+    message : Text;
+    name : Text;
+    phone : Text;
+    propertyId : Nat
+  };
+type OldPropertyType__986049710 = {#commercial; #flat; #other; #plot; #villa};
+type OldProperty__683581429 =
+  {
+    amenities : [Text];
+    city : Text;
+    createdAt : Int;
+    description : Text;
+    facing : OldFacingDirection__929224431;
+    featured : Bool;
+    id : Nat;
+    images : [ExternalBlob__246066408];
+    listerId : Principal;
+    price : Nat;
+    propertyType : OldPropertyType__986049710;
+    published : Bool;
+    sizeSqft : Nat;
+    sold : Bool;
+    title : Text;
+    var viewCount : Nat
+  };
+type OldUserProfile__416069324 = {name : Text; role : Text};
+type OldVisitRequest__90695844 =
+  {
+    createdAt : Int;
+    customerPrincipal : Principal;
+    email : Text;
+    id : Nat;
+    message : Text;
+    name : Text;
+    phone : Text;
+    preferredDate : Text;
+    preferredTime : Text;
+    propertyId : Nat;
+    var status : OldVisitStatus__42039445
+  };
+type OldVisitStatus__42039445 = {#pending; #reviewed};
+type PropertyId__421252593 = Nat;
+type PropertyType__977413445 =
+  {
+    #commercial;
+    #flat;
+    #other;
+    #penthouse;
+    #plot;
+    #studio;
+    #townhouse;
+    #villa
+  };
+type Property__612470078 =
+  {
+    amenities : [Text];
+    city : Text;
+    createdAt : Timestamp__301639476;
+    description : Text;
+    facing : FacingDirection__377551738;
+    featured : Bool;
+    id : PropertyId__421252593;
+    images : [ExternalBlob__246066408];
+    listerId : Principal;
+    price : Nat;
+    propertyType : PropertyType__977413445;
+    published : Bool;
+    sizeSqft : Nat;
+    sold : Bool;
+    title : Text;
+    var viewCount : Nat
+  };
+type Set__532252804<T> = Set__710576254<T>;
+type Set__710576254<T> =
+  {var root : Node__92254746<T>; var size : Nat__490723111};
+type Timestamp__301639476 = Int;
+type UserProfile__1009003526 = {name : Text; role : Text};
+type UserRole__1054455867 = {#admin; #guest; #user};
+type UserRole__717262347 = {#admin; #guest; #user};
+type VisitRequestId__535313100 = Nat;
+type VisitRequest__573877286 =
+  {
+    createdAt : Timestamp__301639476;
+    customerPrincipal : Principal;
+    email : Text;
+    id : VisitRequestId__535313100;
+    message : Text;
+    name : Text;
+    phone : Text;
+    preferredDate : Text;
+    preferredTime : Text;
+    propertyId : PropertyId__421252593;
+    var status : VisitStatus__416425468
+  };
+type VisitStatus__416425468 =
+  {#cancelled; #completed; #confirmed; #pending; #reviewed};
+actor ({
+  in accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__717262347>
+    };
+  in bookmarks : Map__605269027<Principal, Set__532252804<Nat>>;
+  in inquiries : List__415060402<OldInquiry__962755827>;
+  in nextInquiryId : {var value : Nat};
+  in nextPropertyId : {var value : Nat};
+  in nextVisitRequestId : {var value : Nat};
+  in properties : List__415060402<OldProperty__683581429>;
+  in userProfiles : Map__605269027<Principal, OldUserProfile__416069324>;
+  in visitRequests : List__415060402<OldVisitRequest__90695844>
+}, {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1054455867>
+    };
+  stable bookmarks :
+    {
+      var root :
+        Node__46230540<Principal, Set__532252804<PropertyId__421252593>>;
+      var size : Nat__490723111
+    };
+  stable inquiries :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Inquiry__331149959]];
+      var elementIndex : Nat__490723111
+    };
+  stable nextInquiryId : {var value : Nat};
+  stable nextPropertyId : {var value : Nat};
+  stable nextVisitRequestId : {var value : Nat};
+  stable properties :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Property__612470078]];
+      var elementIndex : Nat__490723111
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__1009003526>;
+      var size : Nat__490723111
+    };
+  stable visitRequests :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?VisitRequest__573877286]];
+      var elementIndex : Nat__490723111
+    }
+}) ;
