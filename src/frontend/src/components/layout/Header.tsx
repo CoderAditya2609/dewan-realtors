@@ -26,7 +26,7 @@ const NAV_LINKS = [
 
 export function Header() {
   const { isDark, toggle } = useDarkMode();
-  const { isLoggedIn, isEmployee, isCustomer, user, login, logout } = useAuth();
+  const { isLoggedIn, isEmployee, isCustomer, user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -154,23 +154,21 @@ export function Header() {
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={login}
-                className="text-sm font-medium"
-                data-ocid="btn-login"
-              >
-                Log in
-              </Button>
-              <Button
-                size="sm"
-                onClick={login}
-                className="btn-primary text-sm"
-                data-ocid="btn-signup"
-              >
-                Sign up
-              </Button>
+              <Link to="/auth/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-sm font-medium"
+                  data-ocid="btn-login"
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link to="/auth/signup">
+                <Button size="sm" className="btn-primary text-sm" data-ocid="btn-signup">
+                  Sign up
+                </Button>
+              </Link>
             </div>
           )}
 
@@ -268,27 +266,20 @@ export function Header() {
                   </div>
                 ) : (
                   <div className="flex gap-2 px-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 text-sm"
-                      onClick={() => {
-                        login();
-                        setMenuOpen(false);
-                      }}
-                      data-ocid="btn-mobile-login"
-                    >
-                      Log in
-                    </Button>
-                    <Button
-                      className="flex-1 btn-primary text-sm"
-                      onClick={() => {
-                        login();
-                        setMenuOpen(false);
-                      }}
-                      data-ocid="btn-mobile-signup"
-                    >
-                      Sign up
-                    </Button>
+                    <Link to="/auth/login" className="flex-1" onClick={() => setMenuOpen(false)}>
+                      <Button
+                        variant="outline"
+                        className="w-full text-sm"
+                        data-ocid="btn-mobile-login"
+                      >
+                        Log in
+                      </Button>
+                    </Link>
+                    <Link to="/auth/signup" className="flex-1" onClick={() => setMenuOpen(false)}>
+                      <Button className="w-full btn-primary text-sm" data-ocid="btn-mobile-signup">
+                        Sign up
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </div>
