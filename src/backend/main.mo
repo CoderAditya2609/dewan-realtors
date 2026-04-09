@@ -9,7 +9,6 @@ import PropertyTypes "types/property";
 import LeadTypes "types/lead";
 import UserTypes "types/user";
 import Common "types/common";
-import PropertyLib "lib/property";
 import PropertyMixin "mixins/property-api";
 import LeadMixin "mixins/lead-api";
 import UserMixin "mixins/user-api";
@@ -37,13 +36,6 @@ actor {
   // User / bookmark state
   let userProfiles = Map.empty<Principal, UserTypes.UserProfile>();
   let bookmarks = Map.empty<Principal, Set.Set<Common.PropertyId>>();
-
-  // Seed sample data on first initialization
-  do {
-    if (properties.size() == 0) {
-      nextPropertyId.value := PropertyLib.seedSampleData(properties, nextPropertyId.value);
-    };
-  };
 
   // Mixin inclusions
   include PropertyMixin(accessControlState, properties, nextPropertyId);

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -15,7 +16,7 @@ import {
   User,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // ─── Feature list items ────────────────────────────────────────────────────────
 const employeeFeatures = [
@@ -39,8 +40,9 @@ interface AuthCardProps {
   iconColor: string;
   features: { icon: React.ElementType; text: string }[];
   ctaLabel: string;
+  helperText: string;
   userRole: "employee" | "customer";
-  onLogin: (role: "employee" | "customer") => void;
+  onLogin: (role: "employee" | "customer", mode?: "google") => void;
   delay: number;
   badge: string;
 }
@@ -53,6 +55,7 @@ function AuthCard({
   iconColor,
   features,
   ctaLabel,
+  helperText,
   userRole,
   onLogin,
   delay,
@@ -69,6 +72,7 @@ function AuthCard({
         background: "oklch(var(--card) / 0.85)",
         backdropFilter: "blur(16px)",
         boxShadow: "var(--shadow-elevated)",
+        transformStyle: "preserve-3d",
       }}
     >
       {/* Shimmer line at top */}
@@ -122,15 +126,26 @@ function AuthCard({
             background: "var(--gradient-accent)",
             color: "oklch(var(--accent-foreground))",
           }}
-          onClick={() => onLogin(userRole)}
+          onClick={() =>
+            onLogin(userRole, userRole === "customer" ? "google" : undefined)
+          }
           data-ocid={`btn-login-${userRole}`}
         >
-          <LogIn className="w-4 h-4" />
+          {userRole === "customer" ? (
+            <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden>
+              <path
+                fill="currentColor"
+                d="M21.35 11.1h-9.18v2.98h5.27c-.23 1.48-1.76 4.35-5.27 4.35-3.17 0-5.75-2.62-5.75-5.84s2.58-5.84 5.75-5.84c1.81 0 3.02.77 3.71 1.43l2.52-2.45C16.78 4.23 14.67 3.3 12.17 3.3 7.2 3.3 3.17 7.38 3.17 12.59s4.03 9.29 9 9.29c5.2 0 8.64-3.65 8.64-8.79 0-.59-.06-1.03-.14-1.49z"
+              />
+            </svg>
+          ) : (
+            <LogIn className="w-4 h-4" />
+          )}
           {ctaLabel}
           <ChevronRight className="w-4 h-4 ml-auto" />
         </Button>
         <p className="mt-3 text-center text-xs text-muted-foreground leading-relaxed">
-          Secured by Internet Identity — no passwords required
+          {helperText}
         </p>
       </div>
     </motion.div>
@@ -141,6 +156,8 @@ function AuthCard({
 export function LoginPage() {
   const { login, isLoggedIn, role, setRole } = useAuth();
   const navigate = useNavigate();
+  const [employeePin, setEmployeePin] = useState("");
+  const [pinError, setPinError] = useState("");
 
   // Redirect after login based on role
   useEffect(() => {
@@ -153,9 +170,16 @@ export function LoginPage() {
     }
   }, [isLoggedIn, role, navigate]);
 
-  const handleLogin = (selectedRole: "employee" | "customer") => {
-    // Set role first so it's stored as pendingRole, then trigger II login
-    // After login, the auth hook will persist the role to backend
+  const handleLogin = (
+    selectedRole: "employee" | "customer",
+    _mode?: "google",
+  ) => {
+    if (selectedRole === "employee" && employeePin !== "180726") {
+      setPinError("Invalid employee PIN.");
+      return;
+    }
+
+    setPinError("");
     setRole(selectedRole);
     login();
   };
@@ -215,7 +239,8 @@ export function LoginPage() {
           iconBg="oklch(0.25 0.02 285 / 0.1)"
           iconColor="text-primary"
           features={employeeFeatures}
-          ctaLabel="Login as Employee"
+          ctaLabel="Continue as Employee"
+          helperText="Employee access requires PIN verification"
           userRole="employee"
           onLogin={handleLogin}
           delay={0.1}
@@ -228,12 +253,33 @@ export function LoginPage() {
           iconBg="oklch(0.72 0.16 62 / 0.12)"
           iconColor="text-accent"
           features={customerFeatures}
-          ctaLabel="Login as Customer"
+          ctaLabel="Continue with Google"
+          helperText="Use your currently signed-in Google account"
           userRole="customer"
           onLogin={handleLogin}
           delay={0.2}
           badge="Buyer"
         />
+      </div>
+
+      <div className="w-full max-w-md mt-6 rounded-xl border border-border/40 bg-card/70 backdrop-blur-md p-4 shadow-elevated">
+        <label className="text-sm font-medium text-foreground block mb-2">
+          Employee PIN
+        </label>
+        <Input
+          type="password"
+          value={employeePin}
+          onChange={(e) => setEmployeePin(e.target.value)}
+          placeholder="Enter PIN for employee login"
+          className="h-11"
+          data-ocid="input-employee-pin"
+        />
+        <p className="text-xs text-muted-foreground mt-2">
+          Required only for employee login. Customer login does not need a PIN.
+        </p>
+        {pinError ? (
+          <p className="text-xs text-destructive mt-2">{pinError}</p>
+        ) : null}
       </div>
 
       {/* Footer note */}
